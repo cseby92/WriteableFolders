@@ -4,11 +4,10 @@ import java.util.List;
 public class FolderSearch {
 
     public Node getWritableFolderStructure(List<String> readableFolders, List<String> writableFolders) {
-
         Node root = Node.createRoot();
         readableFolders.forEach((path) -> constructFolders(root, path));
         writableFolders.forEach((path) -> setWritePermission(root, path));
-        root.cutNonWritablePermissions();
+        root.cutNonWritableNodes();
         return root;
     }
 
@@ -20,12 +19,9 @@ public class FolderSearch {
     }
 
     private void setWritePermission(Node root, String folderPath) {
-        Node node = root.searchChildByPath(folderPath);
+        Node node = root.getChildByPath(folderPath);
         if (node != null) {
             node.setPermission(Permission.WRITE);
         }
-
     }
-
-
 }

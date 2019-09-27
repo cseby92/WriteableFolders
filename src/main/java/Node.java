@@ -9,12 +9,19 @@ public class Node {
         this.name = name;
     }
 
+    /**
+     * Method for creating root node.
+     */
     public static Node createRoot() {
         Node node = new Node("/");
         node.setPermission(Permission.WRITE);
         return node;
     }
 
+    /**
+     * Takes a path and permission, and adds it's last element on the path with the permission.
+     * Any non existing nodes on the path also gets created with default NONE permission.
+     */
     public void addChildren(List<String> path, Permission permission) {
         path = new LinkedList<>(path);
         String nodeName = path.get(0);
@@ -41,7 +48,26 @@ public class Node {
         return null;
     }
 
-    public Node searchChildByPath(String childPath) {
+    /**
+     * Takes a nodeName and returns ture if the node or any of it's children's name is equal
+     * to the nodeName.
+     */
+    public Boolean containsNode(String nodeName) {
+        if (name.equals(nodeName)) {
+            return true;
+        }
+        for (Node child : children) {
+            if (child.containsNode(nodeName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Takes a childPath and returns the last node on the path if it exists, else return null.
+     */
+    public Node getChildByPath(String childPath) {
         List<String> nodeNames = new LinkedList<>(Arrays.asList(childPath.split("/")));
         nodeNames.remove(0);
         nodeNames.add(0, "/");
@@ -53,14 +79,14 @@ public class Node {
         List<String> modifiableChildPath = new ArrayList<>(childPath);
         String nodeName = modifiableChildPath.get(0);
         modifiableChildPath.remove(0);
-
-        if (name.equals(nodeName) && modifiableChildPath.isEmpty()) {
+        boolean nameMatches = name.equals(nodeName);
+        boolean nodeHasNoChildren = modifiableChildPath.isEmpty();
+        if (nameMatches && nodeHasNoChildren) {
             return this;
         }
-        if (!name.equals(nodeName)) {
+        if (!nameMatches) {
             return null;
         }
-
         for (Node node : children) {
             Node tempNode;
             tempNode = node.searchChildRecursive(modifiableChildPath);
@@ -71,15 +97,18 @@ public class Node {
         return null;
     }
 
-    public void cutNonWritablePermissions() {
+    /**
+     * Removes child nodes that are non writable, or has no direct or indirect writable child nodes
+     * and also writable nodes that are not accessible by readable or writable nodes.
+     */
+    public void cutNonWritableNodes() {
         Iterator<Node> childrenIterator = children.iterator();
         while (childrenIterator.hasNext()) {
             Node child = childrenIterator.next();
             if (child.permission == Permission.NONE) {
                 childrenIterator.remove();
-                continue;
             } else {
-                child.cutNonWritablePermissions();
+                child.cutNonWritableNodes();
             }
             if (child.children.isEmpty() && child.permission != Permission.WRITE) {
                 childrenIterator.remove();
@@ -115,15 +144,15 @@ public class Node {
         Node node = (Node) o;
 
         if (!getName().equals(node.getName())) return false;
-        if (!children.equals(node.children)) return false;
-        return permission == node.permission;
+        if (!getChildren().equals(node.getChildren())) return false;
+        return getPermission() == node.getPermission();
     }
 
     @Override
     public int hashCode() {
         int result = getName().hashCode();
-        result = 31 * result + children.hashCode();
-        result = 31 * result + permission.hashCode();
+        result = 31 * result + getChildren().hashCode();
+        result = 31 * result + getPermission().hashCode();
         return result;
     }
 
