@@ -50,7 +50,7 @@ class FolderSearchTest {
 
     private Node constructFolders(String[] read, String[] write) {
         List<String> readable = Arrays.asList(read);
-        List<String> writeable = Arrays.asList(write);
-        return folderSearch.getWritableFolderStructure(readable, writeable);
+        List<String> writable = Arrays.asList(write);
+        return folderSearch.getWritableFolderStructure(readable, writable);
     }
 }

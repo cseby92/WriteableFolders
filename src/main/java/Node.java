@@ -65,14 +65,14 @@ public class Node {
     }
 
     /**
-     * Takes a childPath and returns the last node on the path if it exists, else return null.
+     * Takes a childPath and returns the last node on the path if it exists, else return Optional empty.
      */
-    public Node getChildByPath(String childPath) {
+    public Optional<Node> getChildByPath(String childPath) {
         List<String> nodeNames = new LinkedList<>(Arrays.asList(childPath.split("/")));
         nodeNames.remove(0);
         nodeNames.add(0, "/");
         Node node = searchChildRecursive(nodeNames);
-        return node;
+        return Optional.ofNullable(node);
     }
 
     private Node searchChildRecursive(final List<String> childPath) {

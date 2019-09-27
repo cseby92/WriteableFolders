@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class FolderSearch {
 
@@ -19,9 +20,7 @@ public class FolderSearch {
     }
 
     private void setWritePermission(Node root, String folderPath) {
-        Node node = root.getChildByPath(folderPath);
-        if (node != null) {
-            node.setPermission(Permission.WRITE);
-        }
+        Optional<Node> node = root.getChildByPath(folderPath);
+        node.ifPresent(n -> n.setPermission(Permission.WRITE));
     }
 }
